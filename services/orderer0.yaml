@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: orderer0-service
+spec:
+  selector:
+    app: orderer0
+    tier: backend
+  ports:
+  - protocol: TCP
+    targetPort: orderer0-port
+    port: 30001
+    nodePort: 30001
+    name: orderer0-port
+  type: NodePort

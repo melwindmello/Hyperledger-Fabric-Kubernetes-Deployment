@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orderer0
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orderer0
+  template:
+    metadata:
+      labels:
+        app: orderer0
+        tier: backend
+        track: stable
+    spec:
+      hostAliases:
+      - ip: "127.0.0.1"
+        hostnames:
+        - "orderer0.orderer.com"
+      - ip: "192.168.8.104"
+        hostnames:
+        - "couchdb0"
+      nodeSelector:
+        id: orderer
+      containers:
+        - name: orderer0
+          image: "hyperledger/fabric-orderer:1.2.0"
+          ports:
+            - name: orderer0-port
+              containerPort: 30001
+          workingDir: /opt/gopath/src/github.com/hyperledger/fabric
+          command: ["orderer"]
+          env:
+            - name: ORDERER_GENERAL_LOGLEVEL
+              value: "DEBUG"
+            - name: ORDERER_GENERAL_LISTENADDRESS
+              value: "0.0.0.0"
+            - name: ORDERER_GENERAL_LISTENPORT
+              value: "30001"
+            - name: ORDERER_GENERAL_GENESISMETHOD
+              value: "file"
+            - name: ORDERER_GENERAL_GENESISFILE
+              value: "/mnt/orderer.genesis.block"
+            - name: ORDERER_GENERAL_LOCALMSPID
+              value: "ordererMSP"
+            - name: ORDERER_GENERAL_LOCALMSPDIR
+              value: "/mnt/msp"
+            - name: ORDERER_FILELEDGER_LOCATION
+              value: "/mnt/production/orderer"
+            - name: ORDERER_GENERAL_TLS_ENABLED
+              value: "false"
+          volumeMounts:
+            - name: production
+              mountPath: /mnt
+
+      volumes:
+        - name: production
+          persistentVolumeClaim:
+            claimName: orderer0-pvc
+
+
+

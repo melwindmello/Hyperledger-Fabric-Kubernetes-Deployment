@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: peer0-service
+spec:
+  selector:
+    app: peer0
+    tier: backend
+  ports:
+  - protocol: TCP
+    targetPort: peer0-port
+    port: 30002
+    nodePort: 30002
+    name: peer0-port
+  - protocol: TCP
+    targetPort: peer0-event
+    port: 30004
+    nodePort: 30004
+    name: peer0-event
+  type: NodePort

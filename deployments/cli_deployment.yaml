@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cli
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cli
+  template:
+    metadata:
+      labels:
+        app: cli
+        tier: backend
+        track: stable
+    spec:
+      hostAliases:
+        - ip: "192.168.8.105"
+          hostnames:
+            - "orderer0.orderer.com"
+        - ip: "192.168.8.104"
+          hostnames:
+            - "peer0.example.com"
+      nodeSelector:
+        id: peer
+      containers:
+        - name: cli-unit
+          image: "hyperledger/fabric-tools:latest"
+          tty: true
+          stdin: true
+          env:
+            - name: GOPATH
+              value: "/opt/gopath"
+            - name: CORE_LOGGING_GOSSIP
+              value: "INFO"
+            - name: CORE_LOGGING_PEER
+              value: "DEBUG"
+            - name: CORE_PEER_ID
+              value: "peer0.example.com"
+            - name: CORE_PEER_ADDRESS
+              value: "peer0.example.com:30002"
+            - name: CORE_PEER_LOCALMSPID
+              value: "exampleMSP"
+            - name: CORE_PEER_TLS_ENABLED
+              value: "false"
+            - name: CORE_PEER_MSPCONFIGPATH
+              value: "/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/example.com/users/Admin@example.com/msp"
+          workingDir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+          command: ["/bin/bash"]
+          volumeMounts:
+            - name: crypto-config
+              mountPath: /opt/gopath/src/github.com/hyperledger/fabric/peer/crypto
+            - name: channel-artifacts
+              mountPath: /opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
+            - name: chaincode
+              mountPath: /opt/gopath/src/github.com/chaincode
+            - name: host
+              mountPath: /host/var/run/
+      volumes:
+        - name: crypto-config
+          hostPath:
+            path: /home/mini01/WS/fabric-kub/network/crypto-config
+        - name: channel-artifacts
+          hostPath:
+            path: /home/mini01/WS/fabric-kub/network/channel-artifacts
+        - name: chaincode
+          hostPath:
+            path: /home/mini01/WS/fabric-kub/network/chaincode
+        - name: host
+          hostPath:
+            path: /var/run/

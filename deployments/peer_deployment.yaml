@@ -1,0 +1,113 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: peer0
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: peer0
+  template:
+    metadata:
+      labels:
+        app: peer0
+        tier: backend
+        track: stable
+    spec:
+      hostAliases:
+      - ip: "127.0.0.1"
+        hostnames:
+        - "peer0.example.com"
+      - ip: "192.168.8.104"
+        hostnames:
+        - "couchdb0"
+      - ip: "192.168.8.105"
+        hostnames:
+          - "orderer0.orderer.com"
+      nodeSelector:
+        id: peer
+      containers:
+      - name: peer0
+        image: "hyperledger/fabric-peer:1.2.0"
+        ports:
+          - name: peer0-port
+            containerPort: 30002
+          - name: peer0-chaincode
+            containerPort: 30003
+          - name: peer0-event
+            containerPort: 30004
+        workingDir: /opt/gopath/src/github.com/hyperledger/fabric/peer
+        command: ["peer"]
+        args: ["node","start"]
+        env:
+          - name: CORE_VM_ENDPOINT
+            value: "unix:///var/run/docker.sock"
+          - name: CORE_PEER_ADDRESSAUTODETECT
+            value: "true"
+          - name: CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE
+            value: "bridge"
+          - name: CORE_PEER_ID
+            value: "peer0.example.com"
+          - name: CORE_PEER_ADDRESS
+            value: "peer0.example.com:30002"
+          - name: CORE_PEER_GOSSIP_EXTERNALENDPOINT
+            value: "peer0.example.com:30002"
+          - name: CORE_PEER_CHAINCODELISTENADDRESS
+            value: "0.0.0.0:30003"
+          - name: CORE_PEER_GOSSIP_BOOTSTRAP
+            value: "0.0.0.0:30002"
+          - name: CORE_PEER_LISTENADDRESS
+            value: "0.0.0.0:30002"
+          - name: CORE_PEER_EVENTS_ADDRESS
+            value: "0.0.0.0:30004"
+          - name: CORE_PEER_LOCALMSPID
+            value: "exampleMSP"
+          - name: CORE_LOGGING_GOSSIP
+            value: "INFO"
+          - name: CORE_LOGGING_PEER_GOSSIP
+            value: "INFO"
+          - name: CORE_LOGGING_MSP
+            value: "INFO"
+          - name: CORE_LOGGING_POLICIES
+            value: "DEBUG"
+          - name: CORE_LOGGING_CAUTHDSL
+            value: "DEBUG"
+          - name: CORE_PEER_TLS_ENABLED
+            value: "false"
+          - name: CORE_PEER_GOSSIP_USELEADERELECTION
+            value: "true"
+          - name: CORE_PEER_GOSSIP_ORGLEADER
+            value: "false"
+          - name: CORE_PEER_PROFILE_ENABLED
+            value: "true"
+          - name: CORE_LEDGER_STATE_STATEDATABASE
+            value: "CouchDB"
+          - name: CORE_PEER_GOSSIP_ORGLEADER
+            value: "false"
+          - name: CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS
+            value: "couchdb0:30005"
+          - name: ORDERER_URL
+            value: "orderer0.orderer.com:30001"
+          - name: CORE_LEDGER_STATE_COUCHDBCONFIG_USERNAME
+            value: ""
+          - name: CORE_LEDGER_STATE_COUCHDBCONFIG_PASSWORD
+            value: ""
+          - name: CORE_VM_DOCKER_ATTACHSTDOUT
+            value: "true"
+          - name: CORE_PEER_FILESYSTEMPATH
+            value: "/mnt/production"
+          - name: CORE_PEER_MSPCONFIGPATH
+            value: "/mnt/msp"
+        volumeMounts:
+          - name: peer0-volume
+            mountPath: /mnt
+          - name: host
+            mountPath: /var/run
+
+      volumes:
+        - name: peer0-volume
+          persistentVolumeClaim:
+            claimName: peer0-pvc
+        - name: host
+          hostPath:
+            path: /var/run
