@@ -18,14 +18,14 @@ spec:
       - ip: "127.0.0.1"
         hostnames:
         - "peer0.example.com"
-      - ip: "192.168.8.104"
+      - ip: "10.142.0.2"
         hostnames:
         - "couchdb0"
-      - ip: "192.168.8.105"
+      - ip: "10.138.0.2"
         hostnames:
           - "orderer0.orderer.com"
       nodeSelector:
-        id: peer
+        kubernetes.io/hostname: poc3
       containers:
       - name: peer0
         image: "hyperledger/fabric-peer:1.2.0"

@@ -18,11 +18,11 @@ spec:
       - ip: "127.0.0.1"
         hostnames:
         - "orderer0.orderer.com"
-      - ip: "192.168.8.104"
+      - ip: "10.142.0.2"
         hostnames:
         - "couchdb0"
       nodeSelector:
-        id: orderer
+        kubernetes.io/hostname: poc2
       containers:
         - name: orderer0
           image: "hyperledger/fabric-orderer:1.2.0"
@@ -41,7 +41,7 @@ spec:
             - name: ORDERER_GENERAL_GENESISMETHOD
               value: "file"
             - name: ORDERER_GENERAL_GENESISFILE
-              value: "/mnt/orderer.genesis.block"
+              value: "/mnt/genesis.block"
             - name: ORDERER_GENERAL_LOCALMSPID
               value: "ordererMSP"
             - name: ORDERER_GENERAL_LOCALMSPDIR

@@ -15,14 +15,14 @@ spec:
         track: stable
     spec:
       hostAliases:
-        - ip: "192.168.8.105"
+        - ip: "10.138.0.2"
           hostnames:
             - "orderer0.orderer.com"
-        - ip: "192.168.8.104"
+        - ip: "10.142.0.2"
           hostnames:
             - "peer0.example.com"
       nodeSelector:
-        id: peer
+        kubernetes.io/hostname: poc3
       containers:
         - name: cli-unit
           image: "hyperledger/fabric-tools:latest"
@@ -59,13 +59,13 @@ spec:
       volumes:
         - name: crypto-config
           hostPath:
-            path: /home/mini01/WS/fabric-kub/network/crypto-config
+            path: /home/poc3/WS/fabric-kub/network/crypto-config
         - name: channel-artifacts
           hostPath:
-            path: /home/mini01/WS/fabric-kub/network/channel-artifacts
+            path: /home/poc3/WS/fabric-kub/network/channel-artifacts
         - name: chaincode
           hostPath:
-            path: /home/mini01/WS/fabric-kub/network/chaincode
+            path: /home/poc3/WS/fabric-kub/network/chaincode
         - name: host
           hostPath:
             path: /var/run/

@@ -15,7 +15,7 @@ spec:
         track: stable
     spec:
       nodeSelector:
-        id: peer
+        kubernetes.io/hostname: poc3
       containers:
         - name: couchdb0
           image: "hyperledger/fabric-couchdb:latest"
