@@ -5,5 +5,7 @@ Description:
 This has the artifacts required to deploy a Hyperledger Fabric network on a Kubernetes cluster of 1 Manager node and 2 Worker nodes.
 Deployed this on Google Cloud Platform.
 
+Changes in this branch have been tested on Fabric version 1.2.0
+
 TODO:
 Add the steps and commands required to accomplish this.
